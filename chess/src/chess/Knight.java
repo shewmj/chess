@@ -19,8 +19,8 @@ public class Knight extends ChessPiece {
      * @param y1 y-coordinate on the board
      * @param player Player who owns the chess piece
      */
-    public Knight(int x1, int y1, Player player) {
-        super(x1, y1, player);
+    public Knight(int x1, int y1, Player player, String name) {
+        super(x1, y1, player, name);
         if (player.getColor().equalsIgnoreCase("white")) {
             symbol = new ImageIcon("pics/wknight.png");
         } else {

@@ -61,6 +61,7 @@ public class Storage implements java.io.Serializable {
      * 
      * @return a copy of a the chess game that was saved in this 
      */
+
     public Tile[][] extract() {
         if (saved == null) {
             return null;
@@ -81,7 +82,9 @@ public class Storage implements java.io.Serializable {
         }
         return savedBoard;
     }
-    
+
+
+
     //
     // type returns the chess piece that the given 
     // string represents. 
@@ -99,20 +102,21 @@ public class Storage implements java.io.Serializable {
             owner = p2;
         }
         if (type.equalsIgnoreCase("pawn")) {
-            return new Pawn(xco, yco, owner);
+            return new Pawn(xco, yco, owner, "temp");
         } else if (type.equalsIgnoreCase("rook")) {
-            return new Rook(xco, yco, owner);
+            return new Rook(xco, yco, owner, "temp");
         } else if (type.equalsIgnoreCase("bishop")) {
-            return new Bishop(xco, yco, owner);
+            return new Bishop(xco, yco, owner, "temp");
         } else if (type.equalsIgnoreCase("knight")) {
-            return new Knight(xco, yco, owner);
+            return new Knight(xco, yco, owner, "temp");
         } else if (type.equalsIgnoreCase("king")) {
-            return new King(xco, yco, owner);
+            return new King(xco, yco, owner, "temp");
         } else if (type.equalsIgnoreCase("queen")) {
-            return new Queen(xco, yco, owner);
+            return new Queen(xco, yco, owner, "temp");
         } else {
             return null;
         }
     }
+
         
 }

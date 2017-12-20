@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 public abstract class ChessPiece {
     protected int x1; 
     protected int y1;
+    protected String name;
     protected Player player;
     protected ImageIcon symbol;
     
@@ -22,11 +23,12 @@ public abstract class ChessPiece {
      * @param y1 y-coordinate of ChessPiece
      * @param player Player who owns ChessPiece
      */
-    public ChessPiece(int x1, int y1, Player player) {
+    public ChessPiece(int x1, int y1, Player player, String name) {
         super();
         this.x1 = x1;
         this.y1 = y1;
         this.player = player;
+        this.name = name;
     }
     
     /**
@@ -38,6 +40,10 @@ public abstract class ChessPiece {
     public void move(int x1, int y1) {
         this.x1 = x1;
         this.y1 = y1;
+    }
+
+    public String getName() {
+        return name;
     }
     
     /**

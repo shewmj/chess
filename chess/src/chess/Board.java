@@ -163,7 +163,8 @@ public class Board extends JFrame {
     // @param player The player who owns the pawns
     private void setPawns(int row, Player player) {
         for (int i = 0; i < 8; i++) {
-            board[i][row].setCp(new Pawn(i, row, player));
+            board[i][row].setCp(new Pawn(i, row, player, "p" + i));
+            player.addPiece(board[i][row].getCp());
         }
     }
 
@@ -174,14 +175,23 @@ public class Board extends JFrame {
     // @param row The row on the board to set the non-pawn chess pieces
     // @param player The player who owns the chess pieces
     private void setPieces(int row, Player player) {
-        board[0][row].setCp(new Rook(0, row, player));
-        board[1][row].setCp(new Knight(1, row, player));
-        board[2][row].setCp(new Bishop(2, row, player));
-        board[3][row].setCp(new Queen(3, row, player));
-        board[4][row].setCp(new King(4, row, player));
-        board[5][row].setCp(new Bishop(5, row, player));
-        board[6][row].setCp(new Knight(6, row, player));
-        board[7][row].setCp(new Rook(7, row, player));
+        board[0][row].setCp(new Rook(0, row, player, "r1"));
+        board[1][row].setCp(new Knight(1, row, player, "k1"));
+        board[2][row].setCp(new Bishop(2, row, player, "b1"));
+        board[3][row].setCp(new Queen(3, row, player, "q"));
+        board[4][row].setCp(new King(4, row, player, "k"));
+        board[5][row].setCp(new Bishop(5, row, player, "b2"));
+        board[6][row].setCp(new Knight(6, row, player, "k2"));
+        board[7][row].setCp(new Rook(7, row, player, "r2"));
+        player.addPiece(board[0][row].getCp());
+        player.addPiece(board[1][row].getCp());
+        player.addPiece(board[2][row].getCp());
+        player.addPiece(board[3][row].getCp());
+        player.addPiece(board[4][row].getCp());
+        player.addPiece(board[5][row].getCp());
+        player.addPiece(board[6][row].getCp());
+        player.addPiece(board[7][row].getCp());
+
     }
     
 
@@ -219,6 +229,9 @@ public class Board extends JFrame {
                 } else {
                     this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
                 }
+            }
+            if (cpDestin != null) {
+                cpDestin.getPlayer().removePiece(cpDestin);
             }
             board[x1][y1].remove();
             board[x2][y2].setCp(cpSelect);
@@ -338,6 +351,11 @@ public class Board extends JFrame {
         }
         return true;
     }
+
+
+
+
+
  
     /**
      * MoveListener listens to the chess board for player movements 
@@ -373,6 +391,14 @@ public class Board extends JFrame {
                 clicked.repaint();
                 select.setBackground(select.getColor());
                 select = null;
+
+                //ai beginning
+                if (p2.getName().equals("ai")) {
+
+                }
+
+
+
             }
             setTitle(turn.getName() + " - " + turn.getColor());      
         }

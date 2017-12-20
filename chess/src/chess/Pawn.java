@@ -23,8 +23,8 @@ public class Pawn extends ChessPiece {
      * @param y1 y-coordinate on the board
      * @param player Player who owns the chess piece
      */
-    public Pawn(int x1, int y1, Player player) {
-        super(x1, y1, player);
+    public Pawn(int x1, int y1, Player player, String name) {
+        super(x1, y1, player, name);
         moved = false;
         if (y1 < 5) {
             direction = "down";

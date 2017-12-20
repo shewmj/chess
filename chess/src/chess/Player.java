@@ -1,6 +1,10 @@
 package chess;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Player represents a person playing in the Chess Game. 
@@ -18,6 +22,7 @@ public class Player implements Serializable {
     private static boolean playersYet = false;
     private String name;
     private String color;
+    private Map<String, ChessPiece> piecesMap;
     
     /**
      * Constructor for a Player object. 
@@ -31,7 +36,24 @@ public class Player implements Serializable {
             playersYet = true;
         } else {
             color = "BLACK";
-        }      
+        }
+        piecesMap = new HashMap<>();
+    }
+
+    public void addPiece(ChessPiece cp) {
+        piecesMap.put(cp.getName(), cp);
+    }
+
+    public void removePiece(ChessPiece cp) {
+        piecesMap.remove(cp.getName());
+    }
+
+    public ArrayList<ChessPiece> getPieces() {
+        ArrayList<ChessPiece> cpList = new ArrayList<>();
+        for (ChessPiece cp : piecesMap.values()) {
+            cpList.add(cp);
+        }
+        return cpList;
     }
     
     /**
