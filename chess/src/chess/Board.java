@@ -13,12 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
+import java.util.*;
+import javax.swing.*;
 
 
 /**
@@ -353,7 +349,54 @@ public class Board extends JFrame {
     }
 
 
+    private AiMove findAiMove(Player p) {
+        //Comparator<AiMove> comp = (AiMove a, AiMove b) -> (a.score.compareTo(b.score));
+        ArrayList<AiMove> possibleMoves = new ArrayList<>();
+        ArrayList<ChessPiece> cpList = p.getPieces();
+        for (int index = 0; index < cpList.size(); index++) {
+            ChessPiece currPiece = cpList.get(index);
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (cpList.get(index).canMvTo(i, j)) {
+                        ChessPiece temp = board[i][j].getCp();
+                        if (temp == null) {
+                            possibleMoves.add(new AiMove(currPiece, i, j, 1));
+                        }
+                        else if (!currPiece.player.equals(currPiece.player)) {
+                            if (temp instanceof Pawn)
+                                possibleMoves.add(new AiMove(currPiece, i, j, 2));
+                            else if (temp instanceof Bishop)
+                                possibleMoves.add(new AiMove(currPiece, i, j, 3));
+                            else if (temp instanceof Knight)
+                                possibleMoves.add(new AiMove(currPiece, i, j, 3));
+                            else if (temp instanceof Rook)
+                                possibleMoves.add(new AiMove(currPiece, i, j, 4));
+                            else if (temp instanceof Queen)
+                                possibleMoves.add(new AiMove(currPiece, i, j, 5));
+                            else if (temp instanceof King)
+                                possibleMoves.add(new AiMove(currPiece, i, j, 6));
+                        }
+                    }
+                }
+            }
+        }
+        ArrayList<AiMove> equalMoves = new ArrayList<>();
 
+        Collections.sort(possibleMoves);
+        int level = possibleMoves.get(0).score;
+
+        AiMove nextMove = possibleMoves.get(0);
+        for (int i = 0; i < possibleMoves.size(); i++) {
+            if (possibleMoves.get(i).score != level) {
+                break;
+            }
+            equalMoves.add(possibleMoves.get(i));
+        }
+
+        Random rand = new Random();
+        int randNum = rand.nextInt(equalMoves.size());
+        return equalMoves.get(randNum);
+    }
 
 
  
@@ -381,6 +424,14 @@ public class Board extends JFrame {
                 System.out.println("not chess move");
                 return;
             }
+
+            /*
+            if (((Tile) eve.getSource()).getCp().getPlayer().getName().equals("ai")) {
+                return;
+            }
+
+             */
+
             Tile clicked = (Tile) eve.getSource();
             setTitle(turn.getName() + " - " + turn.getColor());
             if (select == null) {
@@ -392,14 +443,35 @@ public class Board extends JFrame {
                 select.setBackground(select.getColor());
                 select = null;
 
-                //ai beginning
-                if (p2.getName().equals("ai")) {
+
+            }
+            //ai beginning
+            if (select == null && p2.getName().equals("ai") && turn == p2) {
+
+                AiMove aiMove = findAiMove(p2);
+                int oldX = aiMove.cp.x1;
+                int oldY = aiMove.cp.y1;
+                movePiece(aiMove.cp.x1, aiMove.cp.y1, aiMove.xCo, aiMove.yCo);
+                board[aiMove.xCo][aiMove.yCo].repaint();
+                /*
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception s) {
 
                 }
+                */
+                //board[aiMove.cp.x1][aiMove.cp.y1].revalidate();
+                //board[aiMove.cp.x1][aiMove.cp.y1].remove();
+
+                ChessPiece pp = board[oldX][oldY].getCp();
+                board[oldX][oldY].repaint();
 
 
 
             }
+
+
+
             setTitle(turn.getName() + " - " + turn.getColor());      
         }
         
