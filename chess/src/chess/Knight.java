@@ -39,9 +39,12 @@ public class Knight extends ChessPiece {
     public boolean canMvTo(int x1, int y1) {
         int xdiff = Math.abs(x1 - this.x1);
         int ydiff = Math.abs(y1 - this.y1);
-        if ((xdiff + ydiff) == 3) {
+        if (xdiff == 1 && ydiff == 2) {
             return true;
-        } 
+        }
+        if (ydiff == 1 && xdiff == 2) {
+            return true;
+        }
         return false;       
     }
     

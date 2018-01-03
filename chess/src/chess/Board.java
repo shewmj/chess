@@ -297,14 +297,15 @@ public class Board extends JFrame {
     //
     // @return if the chess piece can move to the destination tile
     private boolean isClearPath(int x1, int y1, int x2, int y2) {
-        int xdiff = Math.abs(x1 - x2);
-        int ydiff = Math.abs(y1 - y2);
         int iterx;
         int itery;
-        //if its a knight moving or pawn moving 1 space we don't care
-        if ((xdiff + ydiff == 3) || xdiff == 1) {
+        //if its a knight moving we don't care
+        if (board[x1][y1].getCp() instanceof Knight) {
             return true;
         }
+
+
+
         if (x2 > x1) {
             iterx = 1;
         } else if (x1 > x2) {
@@ -312,6 +313,8 @@ public class Board extends JFrame {
         } else {
             iterx = 0;
         }
+
+
         if (y2 > y1) {
             itery = 1;
         } else if (y1 > y2) {
@@ -319,6 +322,7 @@ public class Board extends JFrame {
         } else {
             itery = 0;
         }
+
         return isClearPathHelp(x1, y1, x2, y2, iterx, itery);
     }
 
@@ -357,24 +361,31 @@ public class Board extends JFrame {
             ChessPiece currPiece = cpList.get(index);
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
-                    if (cpList.get(index).canMvTo(i, j)) {
-                        ChessPiece temp = board[i][j].getCp();
-                        if (temp == null) {
+                    if (currPiece.canMvTo(i, j)) {
+                        ChessPiece enemyCP = board[i][j].getCp();
+                        if (!isClearPath(currPiece.x1, currPiece.y1, i, j )) {
+                            continue;
+                        }
+                        if (currPiece instanceof Pawn && !canPawnMove(currPiece.x1, currPiece.y1, i, j)) {
+                            continue;
+                        }
+                        if (enemyCP == null) {
                             possibleMoves.add(new AiMove(currPiece, i, j, 1));
                         }
-                        else if (!currPiece.player.equals(currPiece.player)) {
-                            if (temp instanceof Pawn)
+                        else if (!currPiece.player.equals(enemyCP.player)) {
+                            if (enemyCP instanceof Pawn)
                                 possibleMoves.add(new AiMove(currPiece, i, j, 2));
-                            else if (temp instanceof Bishop)
+                            else if (enemyCP instanceof Bishop)
                                 possibleMoves.add(new AiMove(currPiece, i, j, 3));
-                            else if (temp instanceof Knight)
+                            else if (enemyCP instanceof Knight)
                                 possibleMoves.add(new AiMove(currPiece, i, j, 3));
-                            else if (temp instanceof Rook)
+                            else if (enemyCP instanceof Rook)
                                 possibleMoves.add(new AiMove(currPiece, i, j, 4));
-                            else if (temp instanceof Queen)
+                            else if (enemyCP instanceof Queen)
                                 possibleMoves.add(new AiMove(currPiece, i, j, 5));
-                            else if (temp instanceof King)
+                            else if (enemyCP instanceof King)
                                 possibleMoves.add(new AiMove(currPiece, i, j, 6));
+
                         }
                     }
                 }
@@ -425,13 +436,6 @@ public class Board extends JFrame {
                 return;
             }
 
-            /*
-            if (((Tile) eve.getSource()).getCp().getPlayer().getName().equals("ai")) {
-                return;
-            }
-
-             */
-
             Tile clicked = (Tile) eve.getSource();
             setTitle(turn.getName() + " - " + turn.getColor());
             if (select == null) {
@@ -453,17 +457,6 @@ public class Board extends JFrame {
                 int oldY = aiMove.cp.y1;
                 movePiece(aiMove.cp.x1, aiMove.cp.y1, aiMove.xCo, aiMove.yCo);
                 board[aiMove.xCo][aiMove.yCo].repaint();
-                /*
-                try {
-                    Thread.sleep(5000);
-                } catch (Exception s) {
-
-                }
-                */
-                //board[aiMove.cp.x1][aiMove.cp.y1].revalidate();
-                //board[aiMove.cp.x1][aiMove.cp.y1].remove();
-
-                ChessPiece pp = board[oldX][oldY].getCp();
                 board[oldX][oldY].repaint();
 
 

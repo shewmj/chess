@@ -69,7 +69,7 @@ public class Pawn extends ChessPiece {
         if (xdiff <= 1) {
             if (direction.equals("up") && y1 == this.y1 - 1) {
                 return true;
-            } else if (y1 == this.y1 + 1) {
+            } else if (direction.equals("down") && y1 == this.y1 + 1) {
                 return true;
             } 
         }
