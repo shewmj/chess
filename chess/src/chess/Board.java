@@ -19,14 +19,14 @@ import javax.swing.*;
 
 /**
  * Board contains all the chess pieces and tiles involved in the game of chess.
- * 
+ *
  * @author Matthew Shew
  * @version 1.0
  */
-public class Board extends JFrame { 
+public class Board extends JFrame {
     /**
      * Size of the chess board.
-     */    
+     */
     public static final int SIZE = 8;
     private static final long serialVersionUID = 1L;
     private Tile[][] board;
@@ -36,7 +36,7 @@ public class Board extends JFrame {
     private Tile select;
     private JMenuItem openOp;
     private JMenuItem saveOp;
-       
+
     /**
      * Constructor for a new Board object that 
      * initializes the chess game from the very beginning.
@@ -45,29 +45,34 @@ public class Board extends JFrame {
         super();
         board = new Tile[SIZE][SIZE];
         getPlayers();
-        turn = p1; 
+        turn = p1;
         setFrame();
-        initBoard();   
+        initBoard();
         setScreen();
-        setTitle(turn.getName() + " - WHITE ");  
+        setTitle(turn.getName() + " - WHITE ");
+
+
+
     }
-    
+
+
+
     /**
      * Constructor for a Board object that uses a previously 
      * saved game to reconstruct the game at the same point. 
-     * 
+     *
      * @param board copy of the board to begin the game from 
      * @param p1 the first chess player
      * @param p2 the second chess player
      * @param turn player who's turn it is
      */
-    public Board(Tile[][] board, Player p1, Player p2, Player turn) {       
+    public Board(Tile[][] board, Player p1, Player p2, Player turn) {
         super();
-        this.board = board;      
+        this.board = board;
         this.p1 = p1;
         this.p2 = p2;
         this.turn = turn;
-        setFrame();  
+        setFrame();
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 this.add(board[x][y]);
@@ -75,19 +80,19 @@ public class Board extends JFrame {
             }
         }
         setScreen();
-        setTitle(turn.getName() + " - " + turn.getColor());  
+        setTitle(turn.getName() + " - " + turn.getColor());
     }
-    
+
     //
     // Initializes the board at the start
     //
-    private void initBoard() {      
+    private void initBoard() {
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 if ((x + y) % 2 == 0) {
-                    board[x][y] = new Tile(Color.darkGray, x, y);                           
+                    board[x][y] = new Tile(Color.darkGray, x, y);
                 } else {
-                    board[x][y] = new Tile(Color.lightGray, x, y);        
+                    board[x][y] = new Tile(Color.lightGray, x, y);
                 }
                 this.add(board[x][y]);
                 board[x][y].addMouseListener(new MoveListener());
@@ -98,7 +103,7 @@ public class Board extends JFrame {
         setPawns(6, p2);
         setPieces(7, p2);
     }
-    
+
     //
     // Sets the jframe parts of the Board object and creates
     // the menus for user to open/save
@@ -113,13 +118,13 @@ public class Board extends JFrame {
         menu.add(save);
         openOp = new JMenuItem("File");
         openOp.addMouseListener(new MoveListener());
-        open.add(openOp);       
+        open.add(openOp);
         saveOp = new JMenuItem("New");
         saveOp.addMouseListener(new MoveListener());
         save.add(saveOp);
         setJMenuBar(menu);
     }
-    
+
     //
     // Sets the size and location of the chess game on screen 
     //
@@ -132,7 +137,7 @@ public class Board extends JFrame {
         setBounds(border);
         setVisible(true);
     }
-      
+
     //
     // Asks the users for their names and sets the players
     //
@@ -141,7 +146,7 @@ public class Board extends JFrame {
         String player2;
         do {
             player1 = JOptionPane.showInputDialog("Enter player 1 name:");
-            player2 = JOptionPane.showInputDialog("Enter player 2 name");
+            player2 = JOptionPane.showInputDialog("Enter player 2 name ('ai' for computer)");
             if (player1 == null && player2 == null) {
                 JOptionPane.showMessageDialog(this, "User Quit");
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
@@ -150,7 +155,7 @@ public class Board extends JFrame {
         p1 = new Player(player1);
         p2 = new Player(player2);
     }
-   
+
 
     //
     // Sets a row of pawns at the specified row for the specified player
@@ -187,36 +192,35 @@ public class Board extends JFrame {
         player.addPiece(board[5][row].getCp());
         player.addPiece(board[6][row].getCp());
         player.addPiece(board[7][row].getCp());
-
     }
-    
+
 
     //
     // Moves a chess piece from its location to another if legal.
-    // If the move is not legal then nothing happens. 
-    // 
+    // If the move is not legal then nothing happens.
+    //
     // @param x1 x-coordinate of current tile
     // @param y1 y-coordinate of current tile
     // @param x2 x-coordinate of destination tile
     // @param y2 y-coordinate of destination tile
     //
-    private void movePiece(int x1, int y1, int x2, int y2) {
+    private boolean movePiece(int x1, int y1, int x2, int y2) {
         ChessPiece cpSelect = board[x1][y1].getCp();
         if (cpSelect == null) {
-            return;
+            return false;
         }
         Player currPlayer = cpSelect.getPlayer();
         if (!turn.equals(currPlayer)) {
-            return;
+            return false;
         }
         if (!cpSelect.canMvTo(x2, y2) || !isClearPath(x1, y1, x2, y2)) {
-            return;
+            return false;
         }
         if (cpSelect.toString().substring(1).equals("pawn") && !canPawnMove(x1, y1, x2, y2)) {
-            return;
+            return false;
         }
         ChessPiece cpDestin = board[x2][y2].getCp();
-        if (cpDestin == null || !cpDestin.getPlayer().equals(currPlayer)) {   
+        if (cpDestin == null || !cpDestin.getPlayer().equals(currPlayer)) {
             if (cpDestin instanceof King) {
                 JOptionPane.showMessageDialog(this, "Game Over. " + turn.getName() + " Wins! ");
                 if (getContinue().equalsIgnoreCase("yes")) {
@@ -237,21 +241,23 @@ public class Board extends JFrame {
             } else {
                 turn = p1;
             }
+            return true;
         }
+        return false;
     }
-    
+
     //
-    // Asks the user if they want to play again or not 
-    // after someone wins. 
+    // Asks the user if they want to play again or not
+    // after someone wins.
     //
     private String getContinue() {
-        String ans; 
+        String ans;
         do {
-            ans = JOptionPane.showInputDialog("play again? yes/no: ");            
+            ans = JOptionPane.showInputDialog("play again? yes/no: ");
         } while (!ans.equalsIgnoreCase("yes") && !ans.equalsIgnoreCase("no")) ;
         return ans;
     }
-    
+
 
     //
     // Determines if given a pawn at x1,y1 is x2,y2 a legal movement
@@ -262,7 +268,7 @@ public class Board extends JFrame {
     // @param x1 The x-coordinate of the pawn
     // @param y1 The y-coordinate of the pawn
     // @param x2 The x-coordinate of the destination tile
-    // @param y2 The y-coordinate of the destination tile 
+    // @param y2 The y-coordinate of the destination tile
     //
     // @return if the pawn can move to the destination tile
     private boolean canPawnMove(int x1, int y1, int x2, int y2) {
@@ -280,7 +286,7 @@ public class Board extends JFrame {
             }
             if (opp == null || opp.getPlayer().equals(currPlayer)) {
                 return false;
-            } 
+            }
         }
         return true;
     }
@@ -293,7 +299,7 @@ public class Board extends JFrame {
     // @param x1 The x-coordinate of the chess piece
     // @param y1 The y-coordinate of the chess piece
     // @param x2 The x-coordinate of the destination tile
-    // @param y2 The y-coordinate of the destination tile 
+    // @param y2 The y-coordinate of the destination tile
     //
     // @return if the chess piece can move to the destination tile
     private boolean isClearPath(int x1, int y1, int x2, int y2) {
@@ -303,9 +309,6 @@ public class Board extends JFrame {
         if (board[x1][y1].getCp() instanceof Knight) {
             return true;
         }
-
-
-
         if (x2 > x1) {
             iterx = 1;
         } else if (x1 > x2) {
@@ -313,8 +316,6 @@ public class Board extends JFrame {
         } else {
             iterx = 0;
         }
-
-
         if (y2 > y1) {
             itery = 1;
         } else if (y1 > y2) {
@@ -322,7 +323,6 @@ public class Board extends JFrame {
         } else {
             itery = 0;
         }
-
         return isClearPathHelp(x1, y1, x2, y2, iterx, itery);
     }
 
@@ -334,12 +334,18 @@ public class Board extends JFrame {
     // @param x1 The x-coordinate of the chess piece
     // @param y1 The y-coordinate of the chess piece
     // @param x2 The x-coordinate of the destination tile
-    // @param y2 The y-coordinate of the destination tile 
+    // @param y2 The y-coordinate of the destination tile
     // @param iterx The direction of the chess move on x-plane
     // @param iterx The direction of the chess move on x-plane
     //
     // @return If the path between the current and destination tile is clear
     private boolean isClearPathHelp(int x1, int y1, int x2, int y2, int iterx, int itery) {
+        if (x1 < 0 || x1 > 7 || y1 < 0 || y1 > 7) {
+            return false;
+        }
+        if (x2 < 0 || x2 > 7 || y2 < 0 || y2 > 7) {
+            return false;
+        }
         y1 += itery;
         x1 += iterx;
         while (x1 != x2 || y1 != y2) {
@@ -352,51 +358,103 @@ public class Board extends JFrame {
         return true;
     }
 
-
-    private AiMove findAiMove(Player p) {
-        //Comparator<AiMove> comp = (AiMove a, AiMove b) -> (a.score.compareTo(b.score));
+    //
+    private ArrayList<AiMove> getSingleCpAiMoves(ChessPiece currPiece, int x, int y) {
         ArrayList<AiMove> possibleMoves = new ArrayList<>();
-        ArrayList<ChessPiece> cpList = p.getPieces();
-        for (int index = 0; index < cpList.size(); index++) {
-            ChessPiece currPiece = cpList.get(index);
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    if (currPiece.canMvTo(i, j)) {
-                        ChessPiece enemyCP = board[i][j].getCp();
-                        if (!isClearPath(currPiece.x1, currPiece.y1, i, j )) {
-                            continue;
-                        }
-                        if (currPiece instanceof Pawn && !canPawnMove(currPiece.x1, currPiece.y1, i, j)) {
-                            continue;
-                        }
-                        if (enemyCP == null) {
-                            possibleMoves.add(new AiMove(currPiece, i, j, 1));
-                        }
-                        else if (!currPiece.player.equals(enemyCP.player)) {
-                            if (enemyCP instanceof Pawn)
-                                possibleMoves.add(new AiMove(currPiece, i, j, 2));
-                            else if (enemyCP instanceof Bishop)
-                                possibleMoves.add(new AiMove(currPiece, i, j, 3));
-                            else if (enemyCP instanceof Knight)
-                                possibleMoves.add(new AiMove(currPiece, i, j, 3));
-                            else if (enemyCP instanceof Rook)
-                                possibleMoves.add(new AiMove(currPiece, i, j, 4));
-                            else if (enemyCP instanceof Queen)
-                                possibleMoves.add(new AiMove(currPiece, i, j, 5));
-                            else if (enemyCP instanceof King)
-                                possibleMoves.add(new AiMove(currPiece, i, j, 6));
+        int oldX = currPiece.x1;
+        int oldY = currPiece.y1;
+        currPiece.x1 = x;
+        currPiece.y1 = y;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (currPiece.canMvTo(i, j)) {
 
-                        }
+                    ChessPiece enemyCP = board[i][j].getCp();
+                    if (currPiece instanceof Knight || !isClearPath(currPiece.x1, currPiece.y1, i, j)) {
+                        continue;
+                    }
+
+//                    try {
+//                        if (!isClearPath(currPiece.x1, currPiece.y1, i, j)) {
+//                            continue;
+//                        }
+//                    } catch (ArrayIndexOutOfBoundsException e) {
+//                        System.out.println("-" + currPiece.x1 + "-" +  currPiece.y1 + "-" + i + "-" + j);
+//                    }
+
+                    if (currPiece instanceof Pawn && !canPawnMove(currPiece.x1, currPiece.y1, i, j)) {
+                        continue;
+                    }
+                    if (enemyCP == null) {
+                        possibleMoves.add(new AiMove(currPiece, i, j, 1));
+                    }
+                    else if (!currPiece.player.equals(enemyCP.player)) {
+                        if (enemyCP instanceof Pawn)
+                            possibleMoves.add(new AiMove(currPiece, i, j, 2));
+                        else if (enemyCP instanceof Bishop)
+                            possibleMoves.add(new AiMove(currPiece, i, j, 3));
+                        else if (enemyCP instanceof Knight)
+                            possibleMoves.add(new AiMove(currPiece, i, j, 3));
+                        else if (enemyCP instanceof Rook)
+                            possibleMoves.add(new AiMove(currPiece, i, j, 4));
+                        else if (enemyCP instanceof Queen)
+                            possibleMoves.add(new AiMove(currPiece, i, j, 5));
+                        else if (enemyCP instanceof King)
+                            possibleMoves.add(new AiMove(currPiece, i, j, 6));
+
                     }
                 }
             }
+        }
+        currPiece.x1 = oldX;
+        currPiece.y1 = oldY;
+        return possibleMoves;
+
+    }
+
+
+    private AiMove findAiMove(Player p) {
+
+        ArrayList<AiMove> possibleMoves = new ArrayList<>();
+        ArrayList<ChessPiece> cpList = p.getPieces();
+        for (int index = 0; index < cpList.size(); index++) {
+            ChessPiece temp = cpList.get(index);
+            possibleMoves.addAll(getSingleCpAiMoves(temp, temp.x1, temp.y1));
         }
         ArrayList<AiMove> equalMoves = new ArrayList<>();
 
         Collections.sort(possibleMoves);
         int level = possibleMoves.get(0).score;
 
-        AiMove nextMove = possibleMoves.get(0);
+
+
+
+        if (level == 1) {
+            ArrayList<AiMove> futureMoveList = new ArrayList<>();
+            for (int i = 0; i < possibleMoves.size(); i++) {
+                System.out.println("a" + i);
+                AiMove temp = possibleMoves.get(i);
+                try {
+                    futureMoveList.addAll(getSingleCpAiMoves(temp.cp, temp.xCo, temp.yCo));
+                } catch (ArrayIndexOutOfBoundsException e) {
+
+                    System.out.println(i + temp.cp.name);
+                }
+
+                Collections.sort(futureMoveList);
+                if (futureMoveList.size() > 0) {
+                    possibleMoves.get(i).score = futureMoveList.get(0).score;
+                }
+
+            }
+            Collections.sort(possibleMoves);
+            level = possibleMoves.get(0).score;
+
+        }
+
+
+
+
         for (int i = 0; i < possibleMoves.size(); i++) {
             if (possibleMoves.get(i).score != level) {
                 break;
@@ -410,23 +468,23 @@ public class Board extends JFrame {
     }
 
 
- 
+
     /**
-     * MoveListener listens to the chess board for player movements 
-     * and validates the moves when they are made before changing 
-     * the board. 
-     * 
+     * MoveListener listens to the chess board for player movements
+     * and validates the moves when they are made before changing
+     * the board.
+     *
      * @author Matthew Shew
      * @version 1.0
      */
     private class MoveListener implements MouseListener {
-       
+
         private Storage save;
-        
+
         /**
          * mouseRelease detects for chess piece movement using
-         * the original location of the click. 
-         * 
+         * the original location of the click.
+         *
          * @param eve the mouse event trigger
          */
         @Override
@@ -435,45 +493,35 @@ public class Board extends JFrame {
                 System.out.println("not chess move");
                 return;
             }
-
             Tile clicked = (Tile) eve.getSource();
             setTitle(turn.getName() + " - " + turn.getColor());
             if (select == null) {
                 select = clicked;
                 select.setBackground(Color.green);
-            } else {               
-                movePiece(select.getXco(), select.getYco(), clicked.getXco(), clicked.getYco());
+            } else {
+                boolean successfulMove = movePiece(select.getXco(), select.getYco(), clicked.getXco(), clicked.getYco());
                 clicked.repaint();
                 select.setBackground(select.getColor());
                 select = null;
-
-
+                //ai
+                if (successfulMove && p2.getName().equals("ai") && turn == p2) {
+                    AiMove aiMove = findAiMove(p2);
+                    int oldX = aiMove.cp.x1;
+                    int oldY = aiMove.cp.y1;
+                    movePiece(aiMove.cp.x1, aiMove.cp.y1, aiMove.xCo, aiMove.yCo);
+                    board[aiMove.xCo][aiMove.yCo].repaint();
+                    board[oldX][oldY].repaint();
+                }
             }
-            //ai beginning
-            if (select == null && p2.getName().equals("ai") && turn == p2) {
-
-                AiMove aiMove = findAiMove(p2);
-                int oldX = aiMove.cp.x1;
-                int oldY = aiMove.cp.y1;
-                movePiece(aiMove.cp.x1, aiMove.cp.y1, aiMove.xCo, aiMove.yCo);
-                board[aiMove.xCo][aiMove.yCo].repaint();
-                board[oldX][oldY].repaint();
-
-
-
-            }
-
-
-
-            setTitle(turn.getName() + " - " + turn.getColor());      
-        }
-        
-        @Override
-        public void mouseClicked(MouseEvent eve) {        
+            setTitle(turn.getName() + " - " + turn.getColor());
         }
 
         @Override
-        public void mouseEntered(MouseEvent eve) {    
+        public void mouseClicked(MouseEvent eve) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent eve) {
         }
 
         @Override
@@ -483,7 +531,7 @@ public class Board extends JFrame {
         /**
          * mousePressed detects when the user clicks the open and save 
          * game options. 
-         * 
+         *
          * @param eve the mouse event trigger
          */
         @Override
@@ -494,7 +542,7 @@ public class Board extends JFrame {
                 saveHelp();
             }
         }
-        
+
         //
         // openHelp prompts the user for the name of the file to open 
         // and attempts to retrieve the file. 
@@ -503,7 +551,7 @@ public class Board extends JFrame {
             try {
                 String fileName = JOptionPane.showInputDialog("Enter name of save file: ");
                 FileInputStream fileIn = new FileInputStream(fileName + ".ser");
-                ObjectInputStream in = new ObjectInputStream(fileIn);      
+                ObjectInputStream in = new ObjectInputStream(fileIn);
                 save = (Storage) in.readObject();
                 in.close();
                 fileIn.close();
@@ -513,8 +561,8 @@ public class Board extends JFrame {
             }
             new Board(save.extract(), save.p1, save.p2, save.turn);
         }
-        
-        
+
+
         //
         // saveHelp prompts the user for the name of the file to save to 
         // and attempts to save the file. 
@@ -533,9 +581,7 @@ public class Board extends JFrame {
                 return;
             }
         }
-        
-        
+
     }
-    
     
 }
