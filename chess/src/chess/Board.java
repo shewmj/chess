@@ -50,7 +50,12 @@ public class Board extends JFrame {
         initBoard();
         setScreen();
         setTitle(turn.getName() + " - WHITE ");
+
+
+
     }
+
+
 
     /**
      * Constructor for a Board object that uses a previously 
@@ -141,7 +146,7 @@ public class Board extends JFrame {
         String player2;
         do {
             player1 = JOptionPane.showInputDialog("Enter player 1 name:");
-            player2 = JOptionPane.showInputDialog("Enter player 2 name");
+            player2 = JOptionPane.showInputDialog("Enter player 2 name ('ai' for computer)");
             if (player1 == null && player2 == null) {
                 JOptionPane.showMessageDialog(this, "User Quit");
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
@@ -409,7 +414,7 @@ public class Board extends JFrame {
 
 
     private AiMove findAiMove(Player p) {
-        //Comparator<AiMove> comp = (AiMove a, AiMove b) -> (a.score.compareTo(b.score));
+
         ArrayList<AiMove> possibleMoves = new ArrayList<>();
         ArrayList<ChessPiece> cpList = p.getPieces();
         for (int index = 0; index < cpList.size(); index++) {
@@ -420,6 +425,7 @@ public class Board extends JFrame {
 
         Collections.sort(possibleMoves);
         int level = possibleMoves.get(0).score;
+
 
 
 
@@ -576,8 +582,6 @@ public class Board extends JFrame {
             }
         }
 
-
     }
-
-
+    
 }
